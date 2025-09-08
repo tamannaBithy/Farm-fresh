@@ -1,7 +1,12 @@
-import { FaBars, FaMoon } from "react-icons/fa";
-import { FaSeedling, FaSun } from "react-icons/fa6";
+import { auth } from "@/auth";
+import Link from "next/link";
+import { FaSeedling } from "react-icons/fa6";
+import Logout from "./auth/Logout";
+import ThemeToggle from "./ThemeToggle";
 
-const Navbar = () => {
+const Navbar = async ({ login = false }) => {
+  const session = await auth();
+
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -23,47 +28,47 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center space-x-8">
-            <a
-              href="index.html"
+            <Link
+              href="/"
               className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition"
             >
               Home
-            </a>
-            <a
-              href="products.html"
+            </Link>
+            <Link
+              href="/products"
               className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition"
             >
               Products
-            </a>
-            <a
-              href="farmers.html"
+            </Link>
+            <Link
+              href="/farmers"
               className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition"
             >
               Farmers
-            </a>
-            <a
-              href="about.html"
+            </Link>
+            <Link
+              href="/about"
               className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition"
             >
               About
-            </a>
+            </Link>
+
+            {!login && (
+              <>
+                {session?.user ? (
+                  <div>
+                    <span className="mx-1"> {session?.user?.name} </span>
+                    <span> | </span>
+                    <Logout />
+                  </div>
+                ) : (
+                  <Link href="/login">Login</Link>
+                )}
+              </>
+            )}
           </div>
 
-          <div className="flex items-center space-x-4">
-            <button
-              id="darkToggle"
-              className="p-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
-            >
-              <FaMoon className="dark:hidden" />
-
-              <FaSun className="hidden dark:block" />
-            </button>
-
-            {/* mobile menu */}
-            <button className="md:hidden p-2 text-gray-700 dark:text-gray-300">
-              <FaBars />
-            </button>
-          </div>
+          <ThemeToggle />
         </div>
       </div>
     </nav>

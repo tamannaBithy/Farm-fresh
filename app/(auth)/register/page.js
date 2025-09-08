@@ -1,4 +1,5 @@
 import RegistrationForm from "@/components/auth/RegistrationForm";
+import Link from "next/link";
 import { FaSeedling } from "react-icons/fa6";
 
 const RegistrationPage = () => {
@@ -26,12 +27,12 @@ const RegistrationPage = () => {
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Already have an account?
-                <a
-                  href="login.html"
-                  className="text-primary-600 hover:text-primary-500 font-medium"
+                <Link
+                  href="/login"
+                  className="text-primary-600 hover:text-primary-500 font-semibold ml-1"
                 >
                   Sign in
-                </a>
+                </Link>
               </p>
             </div>
           </div>

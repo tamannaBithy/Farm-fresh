@@ -1,61 +1,82 @@
-// app/api/register/route.js
 import userModel from "@/models/user";
 import { dbConnect } from "@/service/mongo";
+import cloudinary from "@/utils/cloudinary";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
 export const POST = async (request) => {
   try {
-    const {
-      firstName,
-      lastName,
-      email,
-      password,
-      confirmPassword,
-      userType,
-      address,
-      phone,
-      bio,
-      farmName,
-      specialization,
-      farmSize,
-      farmSizeUnit,
-    } = await request.json();
+    const formData = await request.formData();
 
-    if (!email || !password || !firstName || !lastName) {
+    const get = (key) => formData.get(key) || "";
+
+    const firstName = get("firstName");
+    const lastName = get("lastName");
+    const email = get("email");
+    const password = get("password");
+    const userType = get("userType");
+    const address = get("address");
+    const phone = get("phone");
+    const bio = get("bio");
+    const farmName = get("farmName");
+    const specialization = get("specialization");
+    const farmSize = get("farmSize");
+    const farmSizeUnit = get("farmSizeUnit");
+    const termsAccepted = get("termsAccepted") === "true";
+
+    const file = formData.get("profilePicture");
+
+    if (
+      !email ||
+      !password ||
+      !firstName ||
+      !lastName ||
+      !termsAccepted ||
+      !userType ||
+      !address ||
+      !phone
+    ) {
       return new NextResponse("Missing required fields", { status: 400 });
-    }
-
-    if (password !== confirmPassword) {
-      return new NextResponse("Passwords do not match", { status: 400 });
     }
 
     await dbConnect();
 
-    const existingUser = await userModel.findOne({ email });
-    if (existingUser) {
-      return new NextResponse("Email already in use", { status: 409 });
-    }
-
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    let imageUrl = "";
+    if (file && typeof file.arrayBuffer === "function") {
+      const buffer = Buffer.from(await file.arrayBuffer());
+
+      const uploadResult = await new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream({ folder: "farm-fresh/users" }, (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          })
+          .end(buffer);
+      });
+
+      imageUrl = uploadResult.secure_url;
+    }
+
     const newUser = {
-      name: `${firstName} ${lastName}`,
+      firstName,
+      lastName,
       email,
       password: hashedPassword,
       address,
       phone,
       bio,
       userType,
+      profilePicture: imageUrl,
+      termsAccepted,
     };
 
     if (userType === "farmer") {
-      newUser.farmerDetails = {
-        farmName,
-        specialization,
-        farmSize,
-        farmSizeUnit,
-      };
+      newUser.farmName = farmName;
+      newUser.specialization = specialization;
+      newUser.farmSize = farmSize;
+      newUser.farmSizeUnit = farmSizeUnit;
     }
 
     await userModel.create(newUser);

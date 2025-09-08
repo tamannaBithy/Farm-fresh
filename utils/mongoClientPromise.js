@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb";
 
-var _mongomongoClientPromise;
+var _mongoClientPromise;
 
 if (!process.env.MONGO_URI) {
   throw new Error('Invalid/Missing environment variable: "MONGO_URI"');
@@ -15,11 +15,11 @@ let mongoClientPromise;
 if (process.env.ENVIRONMENT === "development") {
   // In development mode, use a global variable so that the value
   // is preserved across module reloads caused by HMR (Hot Module Replacement).
-  if (!global._mongomongoClientPromise) {
+  if (!global._mongoClientPromise) {
     client = new MongoClient(uri, options);
-    global._mongomongoClientPromise = client.connect();
+    global._mongoClientPromise = client.connect();
   }
-  mongoClientPromise = global._mongomongoClientPromise;
+  mongoClientPromise = global._mongoClientPromise;
 } else {
   // In production mode, it's best to not use a global variable.
   client = new MongoClient(uri, options);

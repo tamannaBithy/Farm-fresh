@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema(
     userType: {
       type: String,
       enum: ["customer", "farmer"],
-      required: true,
+      // required: true,
     },
 
     profilePicture: {
@@ -14,38 +14,37 @@ const userSchema = new mongoose.Schema(
 
     firstName: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
     },
 
     lastName: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
     },
 
     email: {
       type: String,
-      required: true,
-      unique: true,
+      // required: true,
       lowercase: true,
       trim: true,
     },
 
     phone: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
     },
 
     address: {
       type: String,
-      required: true,
+      // required: true,
     },
 
     password: {
       type: String,
-      required: true,
+      // required: true,
     },
 
     bio: {
@@ -60,7 +59,6 @@ const userSchema = new mongoose.Schema(
     specialization: {
       type: String,
       enum: ["vegetables", "fruits", "grains", "dairy", "mixed", ""],
-      default: "",
     },
 
     farmSize: {
@@ -75,8 +73,10 @@ const userSchema = new mongoose.Schema(
 
     termsAccepted: {
       type: Boolean,
-      required: true,
+      // required: true,
     },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
   },
   {
     timestamps: true,
